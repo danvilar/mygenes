@@ -1,0 +1,3 @@
+In order to use this simulator, you just have to download the entire /src/
+repository and make sure you have Python 2.7, Numpy and Scipy installed
+in your system.
