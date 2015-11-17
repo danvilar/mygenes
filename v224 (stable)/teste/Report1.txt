@@ -1,0 +1,1 @@
+Generation#	Fit_mean	Node_mod_mean	Edges_mod_mean	Nodes_mean	Edges_mean	Fit_std	Node_mod_std	Edges_mod_std	Nodes_std	Edges_std

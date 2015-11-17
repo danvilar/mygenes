@@ -1,0 +1,10 @@
+Parameter	Value
+n_cells		10
+n_generations	100
+prob_duplic	0.1
+prob_elim	0.1
+prob_delta	0.1
+prob_alpha	0.1
+it_steps	2
+replicas	2
+env_set		2OV.env
