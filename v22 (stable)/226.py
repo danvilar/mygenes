@@ -13,7 +13,33 @@ import scipy.spatial.distance as sp #Jaccard, etc...
 from collections import Counter #Counters
 from os import listdir, path, makedirs
 from sys import argv
-import time
+
+
+#Comment below to run with shell arguments
+#Uncomment below to preset the variables
+
+#List Environment Sets
+# print '-- Environment Sets --'
+# for fname in listdir('env'):
+#	 print fname
+# print ''
+
+#Probabilities and Parameters
+# run_name = 'teste'
+# run_name = raw_input("Run name: ")
+# n_cells = 1000 #cells per generation
+# n_generations = 100 #generations number
+# prob_duplic = 0.005 #Node duplication probability
+# prob_elim = 0.005 #Node elimination probability
+# prob_delta = 0.005 #Edge creation probability
+# prob_alpha = 0.005 #Edge elimination probability
+# it_steps = 5 #Steps of the boolean analysis
+# replicas = 2 #Number of replicas
+# env_set = raw_input("Environment set: ")
+
+
+#Comment below to preset the variables
+#Uncomment below to run with shell arguments
 
 run_name = str(argv[1])
 n_cells = int(argv[2]) #cells per generation
@@ -43,44 +69,53 @@ print >> params, 'it_steps\t%s' %it_steps
 print >> params, 'replicas\t%s' %replicas
 print >> params, 'env_set\t\t%s' %env_set
 print >> params, 'select_fit\t\t%s' %select_fit
-params.close()
+
 
 
 # Environment loader
-def loadEnv():
-	env_file = open('env/%s' %env_set)
-	env_counter = 0
-	environment = {}
-	for line in env_file:
-		line = line.strip().split(':')
-		if line[0] == '@input':
-			n_inputs = int(line[1])
-		elif line[0] == '@output':
-			n_outputs = int(line[1])
-		elif line[0] == '@env':
-			env_counter += 1
-			environment[env_counter] = list()
-			environment[env_counter].append(list())
-			environment[env_counter].append(list())
-			in_out = line[1].strip().split(';')
-			node_counter = 0
-			for innode in in_out[0].split(','):
-				node_counter += 1
-				if innode == '1':
-					environment[env_counter][0].append('E%s' %node_counter)
-			for outnode in in_out[1].split(','):
-				environment[env_counter][1].append(int(outnode))				  
-	env_file.close()
-	
-	default_nodes, EE, FF = [], [], []
-	for a in range(n_inputs):
-		default_nodes.append('E%s' %(a+1))
-		EE.append('E%s' %(a+1))
-	for a in range(n_outputs):
-		default_nodes.append('F%s' %(a+1))
-		FF.append('F%s' %(a+1))
-		
-	return environment, default_nodes, EE, FF
+env_file = open('env/%s' %env_set)
+env_counter = 0
+environment = {}
+for line in env_file:
+	line = line.strip().split(':')
+	if line[0] == '@input':
+		n_inputs = int(line[1])
+	elif line[0] == '@output':
+		n_outputs = int(line[1])
+	elif line[0] == '@env':
+		env_counter += 1
+		environment[env_counter] = list()
+		environment[env_counter].append(list())
+		environment[env_counter].append(list())
+		in_out = line[1].strip().split(';')
+		node_counter = 0
+		for innode in in_out[0].split(','):
+			node_counter += 1
+			if innode == '1':
+				environment[env_counter][0].append('E%s' %node_counter)
+		for outnode in in_out[1].split(','):
+			environment[env_counter][1].append(int(outnode))				  
+env_file.close()
+
+print 'Parameter\tValue'
+print 'n_cells\t\t%s' %n_cells
+print 'n_generations\t%s' %n_generations
+print 'prob_duplic\t%s' %prob_duplic
+print 'prob_elim\t%s' %prob_elim
+print 'prob_delta\t%s' %prob_delta
+print 'prob_alpha\t%s' %prob_alpha
+print 'it_steps\t%s' %it_steps
+print 'replicas\t%s' %replicas
+print 'env_set\t\t%s' %env_set
+
+# Default nodes (input/output nodes)
+default_nodes, EE, FF = [], [], []
+for a in range(n_inputs):
+	default_nodes.append('E%s' %(a+1))
+	EE.append('E%s' %(a+1))
+for a in range(n_outputs):
+	default_nodes.append('F%s' %(a+1))
+	FF.append('F%s' %(a+1))
 
 class new_cell:
 	'''In this class, there are found every variable and
@@ -88,7 +123,7 @@ class new_cell:
 
 	def __init__(self,n_counter):
 		self.n_counter = n_counter #Node id counter
-		self.G = [['N%s'%str(n_counter)],[]]
+		self.G = [[],[]]
 
 	def all_operations(self):
 		'''All operations were put in a single function
@@ -239,13 +274,16 @@ class new_cell:
 		return fit_total, node_mod, edge_mod, total_of_nodes, total_of_edges
 
 #Timer (total simulation time)
+import time
 start_time = time.time()
-
-environment, default_nodes, EE, FF = loadEnv()	
 
 for n_replica in range(replicas):
 	#Cell's Birth
-	population = [new_cell(0) for i in range(n_cells)] #list of the different objects/cells
+	population = [] #list of the different objects/cells
+	for i in range(n_cells):
+		ncell = new_cell(0)
+		ncell.G[0] = ['N0']
+		population.append(ncell)
 	print '%s cells were born in replica %s! Congratulations!\n' %(n_cells,int(n_replica+1))
 
 	#Report Start
@@ -260,7 +298,6 @@ for n_replica in range(replicas):
 		[x.all_operations() for x in population]
 
 		fits,nodes_modularity,edges_modularity, nodes_total,edges_total = [],[],[],[],[]
-		
 		for x1,x2,x3,x4,x5 in [x.stim() for x in population]:
 			fits.append(x1)
 			nodes_modularity.append(x2)
