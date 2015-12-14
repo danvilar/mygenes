@@ -1,8 +1,8 @@
 #===============================================================================
-# My Genes v2.2.7 (01/Dezembro/2015)
+# My Genes v1.0.0 (09/December/2015)
 # coded by: Daniel Vilar
 # email: dvjorge@fc.ul.pt
-# 15/October/2013
+# 07/December/2015
 #===============================================================================
 
 #Python modules import
@@ -17,15 +17,11 @@ import time
 
 run_name = str(argv[1]) #run name
 n_cells = int(argv[2]) #cells per generation
-n_generations = int(argv[3]) #generations number
-prob_duplic = float(argv[4]) #Node duplication probability
-prob_elim = float(argv[5]) #Node elimination probability
-prob_delta = float(argv[6]) #Edge creation probability
-prob_alpha = float(argv[7]) #Edge elimination probability
-it_steps = int(argv[8]) #Steps of the boolean analysis
-replicas = int(argv[9]) #Number of replicas
-env_set = str(argv[10]) #Enviornment set name (must be *.env)
-select_fit = int(argv[11]) #1 for fitness selection, 0 for no criteria
+n_inter_nodes = int(argv[3]) #number of inter nodess
+n_edges_create = int(argv[4]) #number of edges to create
+it_steps = int(argv[5]) #Steps of the boolean analysis
+replicas = int(argv[6]) #Number of replicas
+env_set = str(argv[7]) #Enviornment set name (must be *.env)
 
 # Data folder
 if not path.exists(run_name):
@@ -34,20 +30,14 @@ if not path.exists(run_name):
 params = open('%s/params.txt' %run_name,'w',0)
 params.write('''Parameter\tValue
 n_cells\t\t%s
-n_generations\t%s
-prob_duplic\t%s
-prob_elim\t%s
-prob_delta\t%s
-prob_alpha\t%s
+n_nodes\t\t%s
+n_edges\t\t%s
 it_steps\t%s
 replicas\t%s
-env_set\t\t%s
-select_fit\t\t%s''' %(n_cells, n_generations, prob_duplic, prob_elim, prob_delta, prob_alpha, it_steps, replicas, env_set, select_fit))
+env_set\t\t%s''' %(n_cells, n_inter_nodes, n_edges_create, it_steps, replicas, env_set))
 params.close()
 
-
 # Environment loader
-
 def loadEnv():
 	env_file = open('env/%s' %env_set)
 	env_counter = 0
@@ -90,93 +80,32 @@ class new_cell:
 	def __init__(self, (n_counter, newnodes, newedges)):
 		self.n_counter = n_counter #Node id counter
 		self.G = [newnodes[:],newedges[:]]
-		#print 'esta celula foi criada com os seguintes parametros'
-		#print self.n_counter
-		#print self.G
-	
+		
 	def getAtrib(self):
 		return self.n_counter, self.G[0], self.G[1]
-	
-	def duplication(self):
-		'''Duplication:
-		iteration of all nodes duplicating them with a
-		certain probability. All of the edges are kept'''
-
-		copy_nodes = self.G[0][:]
-		copy_edges = self.G[1][:]				
 		
-		for node in copy_nodes:
-			if np.random.random_sample() <= prob_duplic:
-				self.n_counter += 1
-				self.G[0].append('N%s' %self.n_counter)
-
-				for edge in copy_edges:
-					if edge[0] == node:
-						self.G[1].append(('N%s' %self.n_counter,edge[1]))
-
-					elif edge[1] == node:
-						self.G[1].append((edge[0],'N%s' %self.n_counter))
-	
-	def elimination(self):
-		'''Elimination:
-		iteration of all nodes eliminating them with acertain probability.'''
-
-		if len(self.G[0]) > 1:
-			elim_list = []
-			elim_edge_list = []
-			for node in self.G[0]:
-				if np.random.random_sample() <= prob_elim:
-					elim_list.append(node)
-					for no in self.G[1]:
-						if no[0] == node or no[1] == node:
-							elim_edge_list.append(no)
-
-			self.G[0] = [x for x in self.G[0] if x not in elim_list]
-			self.G[1] = [x for x in self.G[1] if x not in elim_edge_list]
-		else:
-			pass
-		
-	def mutation(self):
-		''' Mutation:
-		Creates a new graph with random edges
-		and the semantic distance between this
-		graph and the original one is the mutation
-		result '''
-
+	def add_edges(self):
 		new_graph = []
 		copy_nodes = self.G[0][:]
 
 		for node in self.G[0]:
 			for e in II:
-				if np.random.random_sample() <= prob_delta and (e,node) not in self.G[1]:
-					new_graph.append((e,node))
-				elif np.random.random_sample() <= prob_alpha and (e,node) in self.G[1]:
-					new_graph.append((e,node))
+				new_graph.append((e,node))
 			
 			for n in copy_nodes:
-				if np.random.random_sample() <= prob_delta and n != node and ((n,node) not in self.G[1] or (node,n) not in self.G[1]):
-					if bool(random.getrandbits(1)) == True:
-						new_graph.append((n,node))
-					else:
-						new_graph.append((node,n))
-				elif np.random.random_sample() <= prob_alpha and n != node and (n,node) in self.G[1]:
+				if bool(random.getrandbits(1)) == True:
 					new_graph.append((n,node))
-				elif np.random.random_sample() <= prob_alpha and n != node and (node,n) in self.G[1]:
+				else:
 					new_graph.append((node,n))
 
 			for f in OO:
-				if np.random.random_sample() <= prob_delta and (node,f) not in self.G[1]:
-					new_graph.append((node,f))
-				elif np.random.random_sample() <= prob_alpha and (node,f) in self.G[1]:
-					new_graph.append((node,f))
-
-		self.G[1] = [(x,y) for (x,y) in new_graph if (x,y) not in self.G[1] and (y,x) not in self.G[1]] + [(x,y) for (x,y) in self.G[1] if (x,y) not in new_graph and (y,x) not in new_graph]
-
+				new_graph.append((node,f))
+				
+		self.G[1] = random.sample(new_graph,n_edges_create)
+		
 	def all_operations(self):
 		'''Ordered oprations'''
-		self.duplication()
-		self.elimination()
-		self.mutation()
+		self.add_edges()
 		return self.stim()
 
 	def stim(self):
@@ -242,7 +171,6 @@ class new_cell:
 			node_mod = 0.0
 		else:
 			node_mod = float(len([kk for kk,nn in Counter(factive_nodes).iteritems() if nn == 1]))/float(len(set(factive_nodes)))
-		#
 
 		total_of_nodes = len(self.G[0])
 		total_of_edges = len(self.G[1])
@@ -254,49 +182,23 @@ start_time = time.time()
 
 environment, default_nodes, II, OO = loadEnv()	
 
+#Report Start
+report = open('%s/Report_generator.txt' %run_name, 'w', 0)
+print >> report, 'Replica#\tFit_mean\tNode_mod_mean\tEdges_mod_mean\tNodes_mean\tEdges_mean\tFit_std\tNode_mod_std\tEdges_mod_std\tNodes_std\tEdges_std'
+
+
 for n_replica in xrange(replicas):
 	#Cell's Birth
-	population = [new_cell((0,['N0'],[])) for i in xrange(n_cells)] #list of the different objects/cells
+	new_nodes = ['N%s' %i for i in xrange(n_inter_nodes)]
+	
+	population = [new_cell((len(new_nodes)-1,new_nodes,[])) for i in xrange(n_cells)] #list of the different objects/cells
 	
 	print '%s cells were born in replica %s! Congratulations!\n' %(n_cells,int(n_replica+1))
-
-	#Report Start
-	report = open('%s/Report%s.txt' %(run_name,int(n_replica+1)), 'w', 0)
-	print >> report, 'Generation#\tFit_mean\tNode_mod_mean\tEdges_mod_mean\tNodes_mean\tEdges_mean\tFit_std\tNode_mod_std\tEdges_mod_std\tNodes_std\tEdges_std'
-
+	
 	#Scripting
-	for ii in xrange(n_generations):
-		print time.time() - start_time, "seconds"
-		print 'Generation %i' %(int(ii)+1)
-
-		fits,nodes_modularity,edges_modularity, nodes_total,edges_total = zip(*[x.all_operations() for x in population])
-		report.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %(int(ii)+1,np.mean(fits),np.mean(nodes_modularity),np.mean(edges_modularity),np.mean(nodes_total),np.mean(edges_total),np.std(fits),np.std(nodes_modularity),np.std(edges_modularity),np.std(nodes_total),np.std(edges_total)))
-
-		fit_sum = sum(fits)
-		new_gen = []
-
-		if fit_sum == 0 or select_fit == 0:
-			new_gen = [new_cell(random.choice(population).getAtrib()) for n in xrange(len(population))]
-			
-		else:
-			RVF, CVF, CVF_val = [],[],0
-			for fit in fits:
-				RVF.append(fit/fit_sum)
-				CVF_val = CVF_val + (fit/fit_sum)
-				CVF.append(CVF_val)
-
-			CVF = list(enumerate(CVF))
-
-			for n in xrange(len(population)):
-				rand_n = np.random.random_sample()
-				for ni,e in CVF:
-					if e >= rand_n:
-						new_gen.append(new_cell(population[ni].getAtrib()))
-						break
-		
-		print [x.getAtrib() for x in new_gen]
-		population = new_gen[:]
-	report.close()
+	print time.time() - start_time, "seconds"
+	fits,nodes_modularity,edges_modularity, nodes_total,edges_total = zip(*[x.all_operations() for x in population])
+	report.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %(n_replica,np.mean(fits),np.mean(nodes_modularity),np.mean(edges_modularity),np.mean(nodes_total),np.mean(edges_total),np.std(fits),np.std(nodes_modularity),np.std(edges_modularity),np.std(nodes_total),np.std(edges_total)))
 
 	pickle.dump([x.getAtrib() for x in population], open('%s/dataset%s.bin' %(run_name,int(n_replica+1)), 'wb'))
 	print "End of replica %s in %s total seconds." %(int(n_replica+1), time.time() - start_time) #total simulation time
