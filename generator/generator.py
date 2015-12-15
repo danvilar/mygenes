@@ -1,5 +1,5 @@
 #===============================================================================
-# My Genes v1.0.0 (09/December/2015)
+# My Genes Generator v1.1.1 (15/December/2015)
 # coded by: Daniel Vilar
 # email: dvjorge@fc.ul.pt
 # 07/December/2015
@@ -20,8 +20,7 @@ n_cells = int(argv[2]) #cells per generation
 n_inter_nodes = int(argv[3]) #number of inter nodess
 n_edges_create = int(argv[4]) #number of edges to create
 it_steps = int(argv[5]) #Steps of the boolean analysis
-replicas = int(argv[6]) #Number of replicas
-env_set = str(argv[7]) #Enviornment set name (must be *.env)
+env_set = str(argv[6]) #Enviornment set name (must be *.env)
 
 # Data folder
 if not path.exists(run_name):
@@ -33,8 +32,7 @@ n_cells\t\t%s
 n_nodes\t\t%s
 n_edges\t\t%s
 it_steps\t%s
-replicas\t%s
-env_set\t\t%s''' %(n_cells, n_inter_nodes, n_edges_create, it_steps, replicas, env_set))
+env_set\t\t%s''' %(n_cells, n_inter_nodes, n_edges_create, it_steps, env_set))
 params.close()
 
 # Environment loader
@@ -60,9 +58,9 @@ def loadEnv():
 				if innode == '1':
 					environment[env_counter][0].append('I%s' %node_counter)
 			for outnode in in_out[1].split(','):
-				environment[env_counter][1].append(int(outnode))				  
+				environment[env_counter][1].append(int(outnode))
 	env_file.close()
-	
+
 	default_nodes, II, OO = [], [], []
 	for a in xrange(n_inputs):
 		default_nodes.append('I%s' %(a+1))
@@ -76,14 +74,14 @@ def loadEnv():
 class new_cell:
 	'''In this class, there are found every variable and
 	functions of a cell's network.'''
-	
+
 	def __init__(self, (n_counter, newnodes, newedges)):
 		self.n_counter = n_counter #Node id counter
 		self.G = [newnodes[:],newedges[:]]
-		
+
 	def getAtrib(self):
 		return self.n_counter, self.G[0], self.G[1]
-		
+
 	def add_edges(self):
 		new_graph = []
 		copy_nodes = self.G[0][:]
@@ -91,7 +89,7 @@ class new_cell:
 		for node in self.G[0]:
 			for e in II:
 				new_graph.append((e,node))
-			
+
 			for n in copy_nodes:
 				if bool(random.getrandbits(1)) == True:
 					new_graph.append((n,node))
@@ -100,9 +98,9 @@ class new_cell:
 
 			for f in OO:
 				new_graph.append((node,f))
-				
+
 		self.G[1] = random.sample(new_graph,n_edges_create)
-		
+
 	def all_operations(self):
 		'''Ordered oprations'''
 		self.add_edges()
@@ -175,30 +173,28 @@ class new_cell:
 		total_of_nodes = len(self.G[0])
 		total_of_edges = len(self.G[1])
 
+		print >> report, '%s\t%s\t%s' %(fit_total, node_mod, edge_mod)
+
 		return fit_total, node_mod, edge_mod, total_of_nodes, total_of_edges
 
 #Timer (total simulation time)
 start_time = time.time()
 
-environment, default_nodes, II, OO = loadEnv()	
+environment, default_nodes, II, OO = loadEnv()
 
 #Report Start
 report = open('%s/Report_generator.txt' %run_name, 'w', 0)
-print >> report, 'Replica#\tFit_mean\tNode_mod_mean\tEdges_mod_mean\tNodes_mean\tEdges_mean\tFit_std\tNode_mod_std\tEdges_mod_std\tNodes_std\tEdges_std'
+print >> report, 'Fitness\tMod_Node\tMod_edge'
 
+#Cell's Birth
+new_nodes = ['N%s' %i for i in xrange(n_inter_nodes)]
+population = [new_cell((len(new_nodes)-1,new_nodes,[])) for i in xrange(n_cells)] #list of the different objects/cells
 
-for n_replica in xrange(replicas):
-	#Cell's Birth
-	new_nodes = ['N%s' %i for i in xrange(n_inter_nodes)]
-	
-	population = [new_cell((len(new_nodes)-1,new_nodes,[])) for i in xrange(n_cells)] #list of the different objects/cells
-	
-	print '%s cells were born in replica %s! Congratulations!\n' %(n_cells,int(n_replica+1))
-	
-	#Scripting
-	print time.time() - start_time, "seconds"
-	fits,nodes_modularity,edges_modularity, nodes_total,edges_total = zip(*[x.all_operations() for x in population])
-	report.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %(n_replica,np.mean(fits),np.mean(nodes_modularity),np.mean(edges_modularity),np.mean(nodes_total),np.mean(edges_total),np.std(fits),np.std(nodes_modularity),np.std(edges_modularity),np.std(nodes_total),np.std(edges_total)))
+print '%s cells were born! Congratulations!\n' %n_cells
 
-	pickle.dump([x.getAtrib() for x in population], open('%s/dataset%s.bin' %(run_name,int(n_replica+1)), 'wb'))
-	print "End of replica %s in %s total seconds." %(int(n_replica+1), time.time() - start_time) #total simulation time
+#Scripting
+print time.time() - start_time, "seconds"
+fits,nodes_modularity,edges_modularity, nodes_total,edges_total = zip(*[x.all_operations() for x in population])
+
+pickle.dump([x.getAtrib() for x in population], open('%s/dataset.bin' %run_name, 'wb'))
+print "Finished in %s total seconds." %(time.time() - start_time) #total simulation time
