@@ -17,7 +17,7 @@ Besides Python and it's modules, you'll need to download the repository.
 
 #####Using the GUI
 
-Uncompress it and double click on **mygenes.py** under the current stable version folder.
+Uncompress the mygenes.zip file you downloaded and double click on **mygenes.py** under the current stable version folder.
 
 ###More information
 
