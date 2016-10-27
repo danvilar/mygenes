@@ -11,7 +11,7 @@ To use My Genes on your operating system you'll need to have **Python 3** instal
 
 After the installation, make sure Python is installed correctly on your system by opening the Terminal (or cmd.exe on Windows), type "python" or "python3" and then hit Enter. If it shows something like the image below, it means you're ready to use My Genes.
 
-![TERMINAL](http://i.imgur.com/3N278VA.png)
+![TERMINAL](http://i.imgur.com/anoHtqZ.png)
 
 Besides Python and the modules, you'll need to download the repository. 
 
