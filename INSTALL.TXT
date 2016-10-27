@@ -1,0 +1,19 @@
+To use My Genes on your operating system you'll need to have Python 3 installed. 
+Make sure NumPy and SciPy. 
+If you have no idea how to install these, I suggest downloading the Python 3 
+distribution by Anaconda (https://www.continuum.io/downloads).
+
+Download the repository and run:
+$ python3 mygenes.py
+
+
+For more informations, read the wiki at: https://github.com/danvilar/mygenes/wiki
+
+ ----------------------------------
+|Feel free to contact me at anytime|
+ ----------------------------------
+| Daniel Vilar Jorge               |
+| d.vilar-jorge15@imperial.ac.uk   |
+| Imperial College London          |
+| Department of Surgery and Cancer |
+ ----------------------------------

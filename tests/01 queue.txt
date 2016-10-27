@@ -1,0 +1,12 @@
+python main.py 01all2NOn 1000 10000 0.01 0.01 0.01 0.01 5 5 2NOn.env 0
+python main.py 01all2OVn 1000 10000 0.01 0.01 0.01 0.01 5 5 2OVn.env 0
+python main.py 01all4NOn 1000 10000 0.01 0.01 0.01 0.01 5 5 4NOn.env 0
+python main.py 01all4OVn 1000 10000 0.01 0.01 0.01 0.01 5 5 4OVn.env 0
+python main.py 01all8NOn 1000 10000 0.01 0.01 0.01 0.01 5 5 8NOn.env 0
+python main.py 01all8OVn 1000 10000 0.01 0.01 0.01 0.01 5 5 8OVn.env 0
+python main.py 01all2NOn 1000 10000 0.01 0.01 0.01 0.01 5 5 2NOn.env 1
+python main.py 01all2OVn 1000 10000 0.01 0.01 0.01 0.01 5 5 2OVn.env 1
+python main.py 01all4NOn 1000 10000 0.01 0.01 0.01 0.01 5 5 4NOn.env 1
+python main.py 01all4OVn 1000 10000 0.01 0.01 0.01 0.01 5 5 4OVn.env 1
+python main.py 01all8NOn 1000 10000 0.01 0.01 0.01 0.01 5 5 8NOn.env 1
+python main.py 01all8OVn 1000 10000 0.01 0.01 0.01 0.01 5 5 8OVn.env 1
