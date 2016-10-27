@@ -1,7 +1,6 @@
 #===============================================================================
 # My Genes Generator v1.1.1 (15/December/2015)
-# coded by: Daniel Vilar
-# email: dvjorge@fc.ul.pt
+# coded by: Daniel VJ <d.vilar-jorge15@imperial.ac.uk>
 # 07/December/2015
 #===============================================================================
 

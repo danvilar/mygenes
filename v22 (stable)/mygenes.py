@@ -1,6 +1,6 @@
 #===============================================================================
 # My Genes(front-end) V1.2  26/October/2015
-# coded by: Daniel Vilar (d.vilar-jorge15@imperial.ac.uk)
+# coded by: Daniel VJ <d.vilar-jorge15@imperial.ac.uk>
 # 15/October/2013
 #===============================================================================
 

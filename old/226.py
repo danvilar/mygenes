@@ -1,7 +1,6 @@
 #===============================================================================
 # My Genes v2.2.5 (17/Novembro/2015)
-# coded by: Daniel Vilar
-# email: dvjorge@fc.ul.pt
+# coded by: Daniel VJ <d.vilar-jorge15@imperial.ac.uk>
 # 15/October/2013
 #===============================================================================
 
